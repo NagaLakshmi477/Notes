@@ -51,6 +51,22 @@ what about data??
 we are not save the data in cluster we will save ouside the cluster like volumes
 docker files --> git (upload)--->  server ---> installing docker ---> pull from the git build as a image---> again pushing to ----> docker hub ---> image is ready
 
+Developer
+    |
+    | eksctl create cluster
+    v
+AWS EKS
+    |
+    +--> Creates Control Plane
+    |
+    +--> Creates Worker Node 1 (EC2)
+    |
+    +--> Creates Worker Node 2 (EC2)
+    |
+    +--> Creates Worker Node 3 (EC2)
+
+This entire setup = Kubernetes Cluster
+
 how to run created image?
 we will use manfest files ---> pushing into git ---> 
 
@@ -63,9 +79,12 @@ for authonitication purpose we will configure aws cli
 
 workstation:
 ===============
-install docker
-run aws configure
-install ekctl for cluster creation:
+1.install docker
+2.run aws configure
+3.install ekctl for cluster creation
+4.install kubectl for cluster intraction
+
+
 ARCH=amd64
 PLATFORM=$(uname -s)_$ARCH
 curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
@@ -75,11 +94,18 @@ tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 eksctl version
 
-install kubctl for cluster intracation:
+# Install kubectl for cluster interaction
+
 curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.33.0/2025-05-01/bin/linux/amd64/kubectl
-chmod +x ./kubectl --> It will be give kubectl acess for every user
+
+# Make kubectl executable
+chmod +x ./kubectl
+
+# Move kubectl to a directory in PATH
 sudo mv kubectl /usr/local/bin/kubectl
-kubectl version
+
+# Verify installation
+kubectl version --client
 
 command:
 ======
@@ -106,7 +132,7 @@ so we can't use spot instances in prod level beacuse aws kills any time
 
 commands:
 ===========
-cd docker
+cd docker-file
 
 eksctl  create cluster --config-file=eks.yaml
 Now cluster is created we need to intract with nodes

@@ -161,12 +161,12 @@ sudo systemctl start docker
 sudo systemctl enable  docker
 sudo systemctl status  docker
 
-docker ps ---permission denied
+docker ps ---permission denied with ec2 user
 # It will work only for root not for normal user but  we can't take root for docker
 
 add your normal group to docker group
 
-sudo usermod -aG docker ec2-user
+sudo usermod -aG docker ec2-user(user)
 then
 exit 
 docker ps --- It gives running containers
@@ -187,6 +187,7 @@ docker pull <image_name> --> It will take latest image
 docker images 
 * from where it is taking images (docker hub)
 * now we need to create container from the image
+docker create <image_name>
 docker container
 ----------------
 it is the live application created from image
@@ -198,8 +199,9 @@ docker ps ---> running conatiner
 # start the container
 docker start <container_id>
 docker ps 
-# to remove container
+# to remove frocefully container
 docker rm -f <container_ID>
+docker rm <container_ID>
 
 # to remove image , if we remove image container also removed
 docker rmi  nginx

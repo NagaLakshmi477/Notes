@@ -58,7 +58,7 @@ if something goes wrong tracking is very diffcult
 restoring infra is time taking
 version control
 
-## ✅ Benefits of Infrastructure as Code (IaC)
+##  Benefits of Infrastructure as Code (IaC)
 
 - **Version Control**  
   Enables:
