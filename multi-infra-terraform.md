@@ -19,6 +19,7 @@ roboshop-PROD-mysql
 sites:
 mongodb-dev.lakshmireddy.site
 
+tfvars: we can override the value throught tfvars 
 
 How to run provisioners:
 -----------------------

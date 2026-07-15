@@ -158,7 +158,7 @@ version control
    export TF_VAR_sg_name=env_allow_all
    unset TF_VAR_sg_name  # Unset to fall back to default
    ```
-4. **Default Values**
+4. **Default Values** -- what we need normal file
 5. **Prompt Input**
    - If no value is provided, Terraform will prompt for it.
 
@@ -193,6 +193,7 @@ Use based on data structure:
   ```
 
 - Use **dynamic block** for complex nested structures.
+
 Dynamic block:
 =================
 ex: we have ingress and outgress that is not key values we need to change port number(22,.....)
@@ -212,6 +213,8 @@ dynamic "setting" {
 
 functions:
 ============
+terraform console
+max(2,4,5)
 we cannot define our own functions in terraform 
 we need to use builtin functions
 
@@ -247,7 +250,7 @@ locals can have expressions,you can assign a name to it and use it wherever you 
 local are like variables holding the values agianst keys,
 but you can refer variables inside locals,expressions,functions....
 
-can we override the values that given in variables?
+can we override the values that given in variables in local file ?
 no we can't
 variables override: we can mention in variables that want to override
 locals override: we can mention those variables that no need to override
@@ -292,7 +295,7 @@ actual infra ----> user don't want route r53 records
 terraform uses state files to track what is created in the provider every time.
 we run terraform commands terraform check whether the desired infra is matched or not with actula infra thourht the stae file
 
-we cannot put .state files in local for this we user s3 buckets
+we cannot put .state files in local for this we use s3 buckets
 
 s3bucket: (state.tf)
 =================
@@ -300,7 +303,7 @@ keeping state file in local will not work in collabarative environment.
 terraform doesn't understand what are the resources created by others
 so it may create duplicate resources or else it will give erros
 
-
+s3 bucket --> create bucket --> latest-lakshmi-remote-state-dev
 DynamoDB:
 ===========
 - we need to create table in dynamo db
@@ -314,10 +317,7 @@ native locking:
 -------------
 no need to depend on anything
 use lock file and encrypt 
-
 Previously we used dynamodb in my project but recently we migrated into s3 native locking
-
-
 
 provisioners:
 ===========
