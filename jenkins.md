@@ -7,46 +7,99 @@ the real power lies in plugins. without plugins jenkins is web server
 - If you want intergrate with k8s you need k8s/kubectl pluggins
 - If you want to inteate with maven we need maven pluggin
 
-Installing jenkins on AWS console
-- create ec2 instance
-- 
+# Installing Jenkins on AWS
+
+## Create EC2 Instance
+
+1. Create an **EC2 instance** in the AWS Console.
+
+## Install Jenkins
+
+Run the following commands on the EC2 instance:
+
+```bash
 sudo curl -o /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/rpm-stable/jenkins.repo
+
 sudo rpm --import https://pkg.jenkins.io/rpm-stable/jenkins.io-2023.key
-sudo yum install -y fontconfig java-21-openjdk jenkins -y
+
+sudo yum install -y fontconfig java-21-openjdk jenkins
+
 sudo systemctl daemon-reload
+
 sudo systemctl start jenkins
+
 sudo systemctl enable jenkins
+
 sudo systemctl status jenkins
+```
+
+## Get the Initial Admin Password
+
+Run:
+
+```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
 
-Shift left
-===========
-applictaion deploy in test,QA, UAT --> test
-PROD deploy ---> testing, no scanning
-we are using shift left starigy for CICD piprlines.instead of testing and scanning after deploying the application in high environement we are doing testing and scanning in Dev Environmenet. So we can find issues in early stages
+Use the displayed password to complete the initial Jenkins setup.
 
-Free style pipeline:
-====================
-- create the pipeline in UI with some clicks
-1. can't restore if error comes
-2. can't track no version control
-3. no body remember how to do it again
-4. can't resuse
-5. time consuming
+# Shift Left
 
-In jenkins everything is called Job
-we have 3 stages in pipeline
-1. pre-build ---> Options, envi, where to run
-2. build ---> Actual pipeline
-3. post-build ----> fail,sucess, notifications ....
+Normally, the application is deployed to **Test, QA, and UAT** environments for testing.
 
-Master Agent/Node:
-==================
-Jenkins has to run diffrent project pipelines,diff lang, diff versions, diff devices
+For **PROD deployment**, we perform testing, but scanning may not be performed at that stage.
 
-jenkins master reposibility to distribute the builds to diffrent agents
-we can have more agents with diff programming lang and diff OS and diff envi. so that load will be reduce on master
-master collects the logs from agents
+We are using the **Shift Left strategy** in our CI/CD pipelines. Instead of performing testing and scanning after deploying the application to higher environments, we perform testing and scanning in the **DEV environment**.
+
+This helps us **find and fix issues at an early stage**.
+
+
+# Freestyle Pipeline
+
+A **Freestyle Pipeline** is created in the Jenkins UI using a series of clicks and configurations.
+
+## Disadvantages
+
+1. We can't easily restore previous configurations if there is an error.
+2. We can't track changes because there is no version control.
+3. Nobody may remember how to configure it again.
+4. We can't easily reuse the configuration.
+5. It is time-consuming.
+
+## Jenkins Job
+
+In Jenkins, everything is called a **Job**.
+
+## Three Stages in a Pipeline
+
+We have three main stages in a pipeline:
+
+### 1. Pre-Build
+
+* Options
+* Environment
+* Where to run
+
+### 2. Build
+
+* The actual pipeline execution.
+
+### 3. Post-Build
+
+* Failure
+* Success
+* Notifications
+
+# Master and Agent/Node
+
+Jenkins needs to run different project pipelines using different programming languages, versions, devices, and environments.
+
+The **Jenkins Controller (Master)** is responsible for distributing builds to different agents.
+
+We can have multiple agents with different programming languages, operating systems, and environments. This helps reduce the load on the Jenkins Controller.
+
+The **Jenkins Controller** collects logs from the agents and monitors them.
+ 
 
 copy agent privateIp ---> jenkins --> settings ---> manage jenkins --> setup agent --> 
 nodes --> configure node monitors --> checkmark all checkboxes
@@ -57,65 +110,151 @@ ssh --> paste Agent PrivateIP here
 create credenials --> with username(ec2-user) and password --> select --> host -->non verified
 availabilt --> online --> apply
 
-Now i got one error:
-This agent is offline because Jenkins failed to launch the agent process on it
-we need to install java here --> check java_command_not_found file
+# Jenkins Agent Offline Error
 
-agent --> ls -l --
+We may get the following error:
+
+```text
+This agent is offline because Jenkins failed
+to launch the agent process on it.
+```
+
+This happens because **Java is not installed on the Jenkins agent**.
+
+Check the error log for:
+
+```text
+java_command_not_found
+```
+
+## Install Java on the Agent
+
+We need to install Java on the Jenkins agent.
+
+## Check Jenkins Agent Directory
+
+On the agent, run:
+
+```bash
+ls -l
+```
+
+We can see the `jenkins-agent` directory:
+
+```text
 drwx------ 4 ec2-user ec2-user 59 Jul  2 13:20 jenkins-agent
-cd jenkins-agent
+```
 
+Go inside the directory:
+
+```bash
+cd jenkins-agent
+```
+
+We can see the following files and directories:
+
+```text
 drwxr-xr-x 4 ec2-user ec2-user      34 Jul  2 13:07 remoting
 -rw-r--r-- 1 ec2-user ec2-user 1407936 Jul  2 12:52 remoting.jar
 drwxr-xr-x 3 ec2-user ec2-user      29 Jul  2 13:20 workspace
+```
 
-remoting.jar
-------------
-- It is the Jenkins Agent software
-- It is downloaded from the Jenkins controller when you connect an agent.
-- It establishes a communication channel between the Jenkins controller and the agent.
- - The controller uses remoting.jar to send build instructions to the agent and receive the build results.
+The `remoting.jar` file is used by Jenkins to establish communication between the **Jenkins Controller** and the **Agent**.
 
- workspace
- ---------
- we have our pipelines 
+## `remoting.jar`
 
- POST:
- ======
+* It is the **Jenkins Agent software**.
+* It is downloaded from the **Jenkins Controller** when you connect an agent.
+* It establishes a **communication channel** between the Jenkins Controller and the Agent.
+* The Controller uses `remoting.jar` to send build instructions to the Agent and receive the build results.
+## Workspace
 
- Declarative pipeline VS scripted pipeline
- ========================================
+The **workspace** is the directory where our pipeline runs and where the pipeline's files are stored during execution.
 
-scripted pipeline is old,  Declarative pipeline is new pipeline from jenkins-2.X
-scripted --> groovy based pipeline,complies at the time of execution,little bit tought but you have more control
-Declarative ---> entire pipeline complies before run the pipeline,synatx is easy
 
-we are using mix of both pipelines
- disableConcurrentBuilds() means at a time may be 2 piples are running that is we need to tell not concurent builds tells one after another build  started
+## Declarative Pipeline vs Scripted Pipeline
 
-parameters:
-============
-build with parameter ---> here we can mention our parameter hile running pipeline
+**Scripted Pipeline** is the older pipeline style, while **Declarative Pipeline** was introduced with Jenkins 2.x.
 
-Github Webhooks:
-================
-when devloper in feature branch when he push the code to remote i need to immidiately trigger the jenkins pipeline automatically
+### Scripted Pipeline
 
-is any update is happen to jenkins ---> need to inform to github 
-is any update is happen to github ---> need to inform to jenkins
-this are called events
+* It is **Groovy-based**.
+* It is compiled/interpreted during pipeline execution.
+* It is a little more difficult to write.
+* It provides **more control and flexibility**.
 
-github jenkins webhook:
-=======================
-github needs to trigger the jenkins
-we need to place github url to jenkins
-github ---> setting ---> webhook ---> add webhook ---> playload url --> 
-http://jenkins_ip:8080/github-webhook/ --> application --> json
-disable --> create
+### Declarative Pipeline
 
-now we need to change the pipeline configurations --> select github webhook trigger --> save
+* The pipeline structure is validated before execution.
+* The syntax is easier to understand and write.
+* It provides a more structured way to define pipelines.
 
-Now we did any code changes it automatically trigger the jenkins pipeline
+We are using a **mix of both Declarative and Scripted Pipelines**.
+
+## `disableConcurrentBuilds()`
+
+`disableConcurrentBuilds()` prevents multiple builds of the same Jenkins job from running at the same time.
+
+For example, if one build is already running, the next build will wait until the previous build is completed.
+
+This ensures that builds run **one after another** instead of concurrently.
+
+
+# Parameters
+
+**Build with Parameters** → Here, we can provide parameters while running the pipeline.
+
+# GitHub Webhooks
+
+When a developer pushes code from a **feature branch** to the remote repository, we want to immediately trigger the Jenkins pipeline automatically.
+
+If an update happens in **Jenkins**, Jenkins needs to inform GitHub.
+
+If an update happens in **GitHub**, GitHub needs to inform Jenkins.
+
+These are called **events/webhooks**.
+
+
+# GitHub Jenkins Webhook
+
+GitHub needs to trigger Jenkins automatically when there is a code change.
+
+We need to configure the **GitHub webhook URL** in GitHub.
+
+## Configure Webhook in GitHub
+
+Go to:
+
+**GitHub → Settings → Webhooks → Add Webhook**
+
+### Payload URL
+
+Enter:
+
+```text
+http://jenkins_ip:8080/github-webhook/
+```
+
+### Content Type
+
+Select:
+
+**application/json**
+
+Disable SSL verification if required.
+
+Click **Create Webhook**.
+
+## Configure Jenkins
+
+Now we need to change the pipeline configuration:
+
+**Jenkins → Pipeline → Configure → Build Triggers → GitHub hook trigger for GITScm polling → Save**
+
+Now, whenever we make a code change and push it to GitHub, the **Jenkins pipeline will be triggered automatically**.
+
+
+
 
 
 

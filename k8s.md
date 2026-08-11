@@ -47,6 +47,7 @@ one master and one or multiple nodes
 one master we can't run workloads on control plain
 the conatiners are running on the nodes and control plain is cooridinates b/w them
 if the one node is crash then it shift the containers to remaing node
+
 what about data??
 we are not save the data in cluster we will save ouside the cluster like volumes
 docker files --> git (upload)--->  server ---> installing docker ---> pull from the git build as a image---> again pushing to ----> docker hub ---> image is ready
@@ -74,7 +75,8 @@ master (Amazon EKS)
 nodes(Ec2 instances)
 how to craete cluster?
 we can use terraform to create clusters
-we have ekctl(CMD) based on this we can use clusters. After creating cluster we need to intract with by using cubectl
+we have ekctl(CMD) based on this we can use to create clusters.
+After creating cluster we need to intract with by using cubectl
 for authonitication purpose we will configure aws cli
 
 workstation:
@@ -119,6 +121,7 @@ before that we need to do the configuration like how many nodes we need ,which r
 
 managed node group: 
 no need to manage required software and package installation manuvally aws manage everything here
+
 spot instances:
 ================
 on demand ---> whenever you require you will create an instance, aws gaurentees you get instance ---> 1$/hr
@@ -135,6 +138,7 @@ commands:
 cd docker-file
 
 eksctl  create cluster --config-file=eks.yaml
+
 Now cluster is created we need to intract with nodes
 kubectl get nodes --> shows the worker node
 

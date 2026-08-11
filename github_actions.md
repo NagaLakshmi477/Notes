@@ -73,3 +73,59 @@ Actions:
 plugins --> frequently used things are converted into pluggins we use the directly in the pipeline
 everything is action in github workflow
 
+next we will do
+- Terraform-ec2 
+how to add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+Terraform-ec2 --> settings ---> action secreat --> new --> name ands its values and --> save 
+
+workflow --> list of jobs
+job --> pipeline
+steps --> stages
+step --> stage
+actios ---> pluggins
+runners ---> nodes
+reusbale workflow --> jenkins shared library
+runner --> jenkins agent 
+
+now we will crete terraform code for runners 
+- runners
+# runners
+
+
+We need to configure runners
+settings ---> actions --> self --> here we will select linux 
+It will give all commands so we need to login to mobaxterm and run those commands inrunner
+ mkdir actions-runner && cd actions-runner
+curl -o actions-runner-linux-x64-2.335.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.335.1/actions-runner-linux-x64-2.335.1.tar.gz
+tar xzf ./actions-runner-linux-x64-2.335.1.tar.gz
+ ./config.sh --url https://github.com/githut-actions/runners --token BVU3MJ2IDJ65PFYRWF3ZGVLKJUGS4    (eveytime the need take from aws)
+
+runner groups --> default --> check box 
+sudo vim /etc/systemd/system/runner.service
+sudo systemctl enable runner
+sudo systemctl start runner
+
+Github Action Architecutre:
+=================================
+
+Github ----> Runner --->  --->pipelines --> It will call resusable pipeline --> reusable workflow ---> It runner will connect Amazxon Eks we are deploying on EKS
+With in runner pipelines are runing
+
+- next
+robsohop-infra-dev-actions
+it conatin vpc,sg,bastion,eks,ecr
+we will create images using pipelin and we will push to ecr and we will deplotying using helm ekr on github actions
+- catalogue -->cicd.yaml
+- reusable work flow
+
+output in this job ---> passing as input to the other job
+we need to mange the outputs to use in aother jobs
+docker build state:
+we need to create the ECR repo
+ecr --> private repo --> repositary ---> crate private repo --> roboshop/catalogue --> view push commands
+on push command 3 ther is a id 
+-- After the build completes, tag your image so you can push the image to this repository:
+we need to give the credenatisla for docker push
+settings --> action secreate --> Actions secrets and variables --> 
+
+
